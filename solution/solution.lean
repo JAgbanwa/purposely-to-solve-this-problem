@@ -168,21 +168,33 @@ theorem b_mod9 (x b w : ℤ)
 def eVal (b : ℤ) : ℤ := (b ^ 2 - 1) / 9
 
 /-- Under the hypotheses, w² + 2·e ≡ 2 (mod 3).
-    Non-linear identity in b², w², x³ — formal proof pending full analytic treatment. -/
+    Proof: substitute x = 3k+1 and b² = 9e+1 into Eq. A, expand, then omega. -/
 theorem mod27_constraint (x b w : ℤ)
     (hA : 4 * (3 * x - 1) * b ^ 2 + 9 * x * w ^ 2 = x ^ 3 - 2)
     (hx3 : x % 3 = 1)
     (hbmod9 : b ^ 2 % 9 = 1) :
     (w ^ 2 + 2 * eVal b) % 3 = 2 := by
-  unfold eVal; sorry
+  have hbexp : b ^ 2 = 9 * eVal b + 1 := by unfold eVal; omega
+  obtain ⟨k, hk⟩ : ∃ k : ℤ, x = 3 * k + 1 := ⟨x / 3, by omega⟩
+  rw [hk, hbexp] at hA; ring_nf at hA; omega
 
-/-- If e ≡ 0 (mod 3), we would need w² ≡ 2 (mod 3), which is impossible. -/
+/-- If e ≡ 0 (mod 3), we would need w² ≡ 2 (mod 3), which is impossible
+    since squares mod 3 are 0 or 1. -/
 theorem e_not_zero_mod3 (x b w : ℤ)
     (hA : 4 * (3 * x - 1) * b ^ 2 + 9 * x * w ^ 2 = x ^ 3 - 2)
     (hx3 : x % 3 = 1)
     (hbmod9 : b ^ 2 % 9 = 1)
     (he0 : eVal b % 3 = 0) : False := by
-  sorry
+  have hconstr := mod27_constraint x b w hA hx3 hbmod9
+  have key : ∀ c : ZMod 3, c ^ 2 = 0 ∨ c ^ 2 = 1 := by decide
+  rcases key (w : ZMod 3) with h | h
+  · have : ((w ^ 2 : ℤ) : ZMod 3) = 0 := by push_cast; exact h
+    rw [ZMod.intCast_zmod_eq_zero_iff_dvd] at this
+    have : w ^ 2 % 3 = 0 := Int.emod_eq_zero_of_dvd this
+    omega
+  · have hc : ((w ^ 2 : ℤ) : ZMod 3) = 1 := by push_cast; exact h
+    have hmod : w ^ 2 ≡ 1 [ZMOD 3] := (ZMod.intCast_eq_intCast_iff _ 1 3).mp hc
+    simp [Int.ModEq] at hmod; omega
 
 /-! ## Step 6 — Equation ★ and X ≡ 2 (mod 9) -/
 
