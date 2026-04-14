@@ -29,12 +29,14 @@ The proof proceeds by a chain of modular arithmetic reductions:
 \emph{modulo 4} forces $y$ to be even and $z$ to be odd; \emph{modulo 3}
 forces $3 \mid z$; and the substitutions $y = 2b$, $z = 3w$ together with
 the constraint $x \equiv 1 \pmod 3$ yield, upon reduction \emph{modulo 9},
-the impossible congruence $b^2 \equiv 4 \pmod{9}$, while analysis \emph{modulo 27}
-shows $e + 2w^2 \equiv -1 \pmod 3$ (where $e = (b^2-1)/9$) giving a further
-necessary condition on the 3-adic structure of solutions.
+the relation $b^2 \equiv 1 \pmod{9}$, while analysis \emph{modulo 27}
+shows $w^2 + 2e \equiv 2 \pmod 3$ (where $e = (b^2-1)/9$), ruling out
+$e \equiv 0 \pmod 3$.
 We present each step rigorously, trace all necessary subcases, and support our
 conclusions with verified computational evidence (no solutions found for
 $|x| \leq 10^5$).
+Key steps of the argument --- specifically, Steps~1--5 --- have been
+machine-verified in Lean~4 with Mathlib; see Section~\ref{sec:lean}.
 \end{abstract}
 
 \tableofcontents
@@ -116,7 +118,7 @@ each narrowing the possible shape of a hypothetical solution.
 
 \subsection{Step 1 --- Parity from Modulo 4}
 
-\begin{lemma}[Parity of $y$ and $z$]\label{lem:parity}
+\begin{lemma}[Parity of $y$ and $z$; Lean: \texttt{y\_even}, \texttt{z\_odd}]\label{lem:parity}
 Under hypothesis \eqref{eq:hyp}, any solution of \eqref{eq:main} satisfies
 $y \equiv 0 \pmod 2$ (i.e.\ $y$ is even) and $z \equiv 1 \pmod 2$ ($z$ is
 odd).
@@ -151,7 +153,7 @@ even and $z$ is odd.
 
 \subsection{Step 2 --- Divisibility by 3 from Modulo 3}
 
-\begin{lemma}[$3 \mid z$]\label{lem:3divz}
+\begin{lemma}[$3 \mid z$; Lean: \texttt{three\_dvd\_z}, \texttt{three\_not\_dvd\_y}]\label{lem:3divz}
 Under hypothesis \eqref{eq:hyp}, any solution satisfies $z \equiv 0 \pmod 3$.
 \end{lemma}
 
@@ -214,7 +216,7 @@ $b^2\equiv 1\pmod 2$, so $b$ is odd.
 
 \subsection{Step 4 --- Modulo 9}
 
-\begin{lemma}[$b^2 \equiv 1 \pmod 9$]\label{lem:bmod9}
+\begin{lemma}[$b^2 \equiv 1 \pmod 9$; Lean: \texttt{b\_sq\_mod9}, \texttt{b\_mod9}]\label{lem:bmod9}
 $b^2 \equiv 1 \pmod 9$, i.e.\ $b \equiv \pm 1 \pmod 3$ (already known since
 $3\nmid b$) and moreover $b \equiv \pm 1 \pmod 9$.
 \end{lemma}
@@ -242,7 +244,7 @@ $b \equiv \pm 1 \pmod 9$.
 
 Write $b^2 = 1 + 9e$ where $e = (b^2-1)/9 \in \mathbb{Z}$.
 
-\begin{lemma}[Modulo-27 relation]\label{lem:mod27}
+\begin{lemma}[Modulo-27 relation; Lean: \texttt{mod27\_constraint}, \texttt{e\_not\_zero\_mod3}]\label{lem:mod27}
 If a solution to \eqref{eq:sub1} exists, then
 \begin{equation}\label{eq:mod3constraint}
   w^2 \,\equiv\, e + 2 \pmod 3, \qquad e = \tfrac{b^2-1}{9}.
@@ -308,7 +310,7 @@ We use the equivalent factored form of the original equation:
 which follows from $x(x-z)(x+z) = (3x-1)y^2 + 2$ (obtained by rearranging
 \eqref{eq:main}).
 
-\begin{lemma}[$X \equiv 2 \pmod 9$]\label{lem:Xmod9}
+\begin{lemma}[$X \equiv 2 \pmod 9$; Lean: \texttt{X\_mod9} (\texttt{sorry})]\label{lem:Xmod9}
 Any solution satisfies $X \equiv 2 \pmod 9$.
 \end{lemma}
 
@@ -393,6 +395,57 @@ $X = x/2$): $\left(\tfrac{2}{X}\right) = 1$ by quadratic reciprocity
 (as $X \equiv 1 \pmod 8$). So the condition $y^2 \equiv 2 \pmod x$ is
 locally satisfiable at every prime, and no single prime provides the
 global obstruction.
+
+%-----------------------------------------------------------------------
+\section{Lean~4 Formalization}
+\label{sec:lean}
+%-----------------------------------------------------------------------
+
+The file \texttt{solution/solution.lean} contains a Lean~4 formalization of
+the argument, using Mathlib (\texttt{import Mathlib.Tactic},
+\texttt{import Mathlib.Data.ZMod.Basic}).
+The Lake project in the repository root specifies Lean~4.30.0-rc1 and pins
+Mathlib to commit \texttt{1692ef2d}; run \texttt{lake exe cache get} to
+download pre-built \texttt{.olean} files.
+
+The following table summarises the verification status of each result.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{llll}
+\hline
+\textbf{Lean identifier} & \textbf{Corresponds to} & \textbf{Tactic(s)} & \textbf{Status} \\
+\hline
+\texttt{hyp\_crt} & CRT: $x\equiv34\pmod{48}$ & \texttt{omega} & $\checkmark$ proved \\
+\texttt{y\_even} & Lem.~\ref{lem:parity}, $2\mid y$ & \texttt{ZMod}+\texttt{decide} & $\checkmark$ proved \\
+\texttt{z\_odd} & Lem.~\ref{lem:parity}, $z$ odd & \texttt{ZMod 4}+\texttt{decide} & $\checkmark$ proved \\
+\texttt{three\_dvd\_z} & Lem.~\ref{lem:3divz}, $3\mid z$ & \texttt{ZMod}+\texttt{decide} & $\checkmark$ proved \\
+\texttt{three\_not\_dvd\_y} & Lem.~\ref{lem:3divz}, $3\nmid y$ & \texttt{ZMod}+\texttt{decide} & $\checkmark$ proved \\
+\texttt{equation\_A} & Eq.~(A), ring identity & \texttt{ring\_nf}+\texttt{linarith} & $\checkmark$ proved \\
+\texttt{b\_sq\_mod9} & Lem.~\ref{lem:bmod9}, $b^2\equiv1\pmod9$ & \texttt{ZMod 9}+\texttt{decide} & $\checkmark$ proved \\
+\texttt{b\_mod9} & Lem.~\ref{lem:bmod9}, $b\equiv\pm1\pmod9$ & \texttt{ZMod 9}+\texttt{decide} & $\checkmark$ proved \\
+\texttt{mod27\_constraint} & Lem.~\ref{lem:mod27}, $w^2+2e\equiv2\pmod3$ & \texttt{ring\_nf}+\texttt{omega} & $\checkmark$ proved \\
+\texttt{e\_not\_zero\_mod3} & Lem.~\ref{lem:mod27}, $e\not\equiv0\pmod3$ & \texttt{ZMod 3}+\texttt{decide} & $\checkmark$ proved \\
+\texttt{equation\_star} & Eq.~$(\star)$, ring identity & \texttt{ring\_nf}+\texttt{linarith} & $\checkmark$ proved \\
+\texttt{X\_mod9} & Lem.~\ref{lem:Xmod9}, $X\equiv2\pmod9$ & --- & \texttt{sorry} \\
+\texttt{no\_solution} & Thm.~\ref{thm:main} & --- & \texttt{sorry} \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent
+All checked results compile with exit code~0 (warnings only for the two remaining
+\texttt{sorry}s). The \texttt{mod27\_constraint} proof illustrates the
+algebraic approach: substitute $x = 3k+1$ and $b^2 = 9e+1$ into
+Equation~(A), expand with \texttt{ring\_nf}, and close with \texttt{omega}.
+The \texttt{e\_not\_zero\_mod3} proof uses a \texttt{decide} check that
+squares in $\mathbb{Z}/3\mathbb{Z}$ are $\{0,1\}$, so $w^2\equiv2\pmod3$
+is impossible.
+
+The two remaining \texttt{sorry}s require global arguments beyond modular
+arithmetic: \texttt{X\_mod9} needs additional hypotheses linking $X$ to the
+full solution structure, and \texttt{no\_solution} requires an argument that
+no $p$-adic solution lifts to an integer solution.
 
 %-----------------------------------------------------------------------
 \section{Summary and Conclusion}
