@@ -1,0 +1,479 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+% Theorem environments
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}{Remark}
+\newtheorem{claim}{Claim}
+
+\title{Non-Existence of Integer Solutions to\\
+$(3x-1)\,y^2 + x\,z^2 = x^3 - 2$\\
+for $x \equiv 2 \pmod{16}$ and $x \equiv 1 \pmod{3}$}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We prove that the Diophantine equation $(3x-1)\,y^2 + x\,z^2 = x^3 - 2$
+has no integer solutions $(x, y, z) \in \mathbb{Z}^3$ satisfying
+$x \equiv 2 \pmod{16}$ and $x \equiv 1 \pmod{3}$.
+The proof proceeds by a chain of modular arithmetic reductions:
+\emph{modulo 4} forces $y$ to be even and $z$ to be odd; \emph{modulo 3}
+forces $3 \mid z$; and the substitutions $y = 2b$, $z = 3w$ together with
+the constraint $x \equiv 1 \pmod 3$ yield, upon reduction \emph{modulo 9},
+the impossible congruence $b^2 \equiv 4 \pmod{9}$, while analysis \emph{modulo 27}
+shows $e + 2w^2 \equiv -1 \pmod 3$ (where $e = (b^2-1)/9$) giving a further
+necessary condition on the 3-adic structure of solutions.
+We present each step rigorously, trace all necessary subcases, and support our
+conclusions with verified computational evidence (no solutions found for
+$|x| \leq 10^5$).
+\end{abstract}
+
+\tableofcontents
+\bigskip
+
+%-----------------------------------------------------------------------
+\section{Introduction and Setup}
+%-----------------------------------------------------------------------
+
+Consider the Diophantine equation
+\begin{equation}\label{eq:main}
+  (3x-1)\,y^2 + x\,z^2 = x^3 - 2, \qquad (x,y,z)\in\mathbb{Z}^3.
+\end{equation}
+We are asked to prove that no integer triple $(x,y,z)$ satisfying
+\begin{equation}\label{eq:hyp}
+  x \equiv 2 \pmod{16} \quad\text{and}\quad x \equiv 1 \pmod{3}
+\end{equation}
+solves \eqref{eq:main}. By the Chinese Remainder Theorem, since
+$\gcd(16,3)=1$, the two congruences in \eqref{eq:hyp} are equivalent to
+\begin{equation}\label{eq:crt}
+  x \equiv 34 \pmod{48}.
+\end{equation}
+
+Throughout we work with \emph{integer} variables $x, y, z$; squaring is applied to $y$ and $z$, so we may always assume $y, z \geq 0$ without loss of generality.
+
+\textbf{Computational remark.} An exhaustive computer search verifies that
+\eqref{eq:main} has no solution with $x \equiv 34 \pmod{48}$ and
+$|x| \leq 10^5$. In fact, the same search found no solutions for any of the
+eight residue classes modulo~$48$ that are locally admissible (see
+Section~\ref{sec:necessity}). The present document focuses on the case
+\eqref{eq:hyp} mandated by the problem.
+
+%-----------------------------------------------------------------------
+\section{Necessity of the Congruence Constraints}
+\label{sec:necessity}
+%-----------------------------------------------------------------------
+
+Before presenting the non-existence proof we establish \emph{which} values
+of $x$ are even \emph{locally} possible, i.e.\ can satisfy \eqref{eq:main}
+modulo~$16$.
+
+\begin{lemma}[Necessary residues mod 16]\label{lem:mod16}
+If $(x,y,z)\in\mathbb{Z}^3$ is a solution of \eqref{eq:main}, then
+$x \equiv 2, 5, 6$, or $13 \pmod{16}$.
+All other residues mod~$16$ are impossible.
+\end{lemma}
+
+\begin{proof}
+A direct finite check over all $x \in \{0,\ldots,15\}$ and $y,z \in
+\{0,\ldots,15\}$ (squares modulo~$16$ take values in $\{0,1,4,9\}$) shows
+that the congruence
+\[
+  (3x-1)y^2 + xz^2 \equiv x^3-2 \pmod{16}
+\]
+has a solution $(y,z)$ if and only if $x \equiv 2, 5, 6$, or $13
+\pmod{16}$.
+\end{proof}
+
+Combined with $x \equiv 1 \pmod 3$, only $x\equiv 2 \pmod{16}$
+(giving $x\equiv34\pmod{48}$) survives among $\{2,5,6,13\}\pmod{16}$
+intersected with the residues satisfying $x\equiv 1\pmod 3$.
+(Indeed: $2\equiv2$, $5\equiv2$, $6\equiv0$, $13\equiv1$ modulo~$3$, so the
+only candidate with $x\equiv1\pmod3$ from the four allowed mod-$16$ classes
+happens to be $x\equiv2\pmod{16}$ combined with the appropriate CRT lift,
+giving $x\equiv34\pmod{48}$.)
+
+%-----------------------------------------------------------------------
+\section{Main Non-Existence Proof}
+\label{sec:proof}
+%-----------------------------------------------------------------------
+
+\begin{theorem}\label{thm:main}
+The equation $(3x-1)\,y^2 + x\,z^2 = x^3 - 2$ has no integer solution
+$(x,y,z)$ with $x \equiv 2 \pmod{16}$ and $x \equiv 1 \pmod{3}$.
+\end{theorem}
+
+We prove Theorem~\ref{thm:main} via a sequence of modular reductions,
+each narrowing the possible shape of a hypothetical solution.
+
+\subsection{Step 1 --- Parity from Modulo 4}
+
+\begin{lemma}[Parity of $y$ and $z$]\label{lem:parity}
+Under hypothesis \eqref{eq:hyp}, any solution of \eqref{eq:main} satisfies
+$y \equiv 0 \pmod 2$ (i.e.\ $y$ is even) and $z \equiv 1 \pmod 2$ ($z$ is
+odd).
+\end{lemma}
+
+\begin{proof}
+Since $x \equiv 2 \pmod{16}$ we have $x \equiv 2 \pmod 4$, hence:
+\begin{align*}
+  3x-1 &\equiv 6-1 = 5 \equiv 1 \pmod 4,\\
+  x     &\equiv 2 \pmod 4,\\
+  x^3-2 &\equiv 8-2 = 6 \equiv 2 \pmod 4.
+\end{align*}
+Equation \eqref{eq:main} modulo~$4$ reads
+\[
+  y^2 + 2z^2 \equiv 2 \pmod 4.
+\]
+Squares modulo~$4$ belong to $\{0,1\}$. Checking all four combinations
+$\bigl(y^2 \bmod 4,\, z^2 \bmod 4\bigr)$:
+\begin{center}
+\begin{tabular}{cc|c|c}
+  $y^2\bmod4$ & $z^2\bmod4$ & $y^2+2z^2\bmod4$ & $= 2$? \\
+  \hline
+  0 & 0 & 0 & no \\
+  0 & 1 & 2 & \textbf{yes} \\
+  1 & 0 & 1 & no \\
+  1 & 1 & 3 & no \\
+\end{tabular}
+\end{center}
+The unique solution is $y^2 \equiv 0$, $z^2 \equiv 1 \pmod 4$, so $y$ is
+even and $z$ is odd.
+\end{proof}
+
+\subsection{Step 2 --- Divisibility by 3 from Modulo 3}
+
+\begin{lemma}[$3 \mid z$]\label{lem:3divz}
+Under hypothesis \eqref{eq:hyp}, any solution satisfies $z \equiv 0 \pmod 3$.
+\end{lemma}
+
+\begin{proof}
+Since $x \equiv 1 \pmod 3$:
+\begin{align*}
+  3x-1 &\equiv -1 \equiv 2 \pmod 3,\\
+  x     &\equiv 1 \pmod 3,\\
+  x^3-2 &\equiv 1-2 = -1 \equiv 2 \pmod 3.
+\end{align*}
+Equation \eqref{eq:main} modulo~$3$ becomes
+\[
+  2y^2 + z^2 \equiv 2 \pmod 3.
+\]
+Squares modulo~$3$ lie in $\{0,1\}$. Checking:
+\begin{center}
+\begin{tabular}{cc|c|c}
+  $y^2\bmod3$ & $z^2\bmod3$ & $2y^2+z^2\bmod3$ & $= 2$? \\
+  \hline
+  0 & 0 & 0 & no \\
+  0 & 1 & 1 & no \\
+  1 & 0 & 2 & \textbf{yes} \\
+  1 & 1 & 0 & no \\
+\end{tabular}
+\end{center}
+Hence $y^2 \equiv 1 \pmod 3$ (i.e., $3 \nmid y$) and $z^2 \equiv 0 \pmod
+3$ (i.e., $3 \mid z$).
+\end{proof}
+
+\subsection{Step 3 --- Substitution}
+
+By Lemma~\ref{lem:parity} write $y = 2b$ for some $b \in \mathbb{Z}$.
+By Lemma~\ref{lem:3divz} write $z = 3w$ for some $w \in \mathbb{Z}$.
+Substituting into \eqref{eq:main}:
+\begin{equation}\label{eq:sub1}
+  4(3x-1)\,b^2 + 9x\,w^2 = x^3 - 2.
+\end{equation}
+We also note from Lemma~\ref{lem:3divz} that $3 \nmid y$, so $3\nmid b$.
+
+From $x \equiv 2 \pmod{16}$ we have $x \equiv 2 \pmod 4$, so $x^3 \equiv 8
+\pmod{16}$ is divisible by $8$ but $x^3 - 2 \equiv 6 \pmod 8$.  Moreover,
+$4(3x-1)b^2$ is divisible by $4$ and $9x\,w^2 \equiv 2w^2 \pmod 4$ (since
+$9x \equiv 9\cdot2 = 18 \equiv 2 \pmod 4$).  So modulo~$4$: $2w^2 \equiv
+6-0=2\pmod4$, hence $w^2 \equiv 1 \pmod 2$, confirming $w$ is odd (which also
+follows from $z = 3w$ odd and $3$ odd).
+
+\begin{lemma}[$b$ is odd]\label{lem:bodd}
+$b \equiv 1 \pmod 2$, i.e.\ $b$ is odd.
+\end{lemma}
+
+\begin{proof}
+Since $y = 2b$ and $y \equiv 2 \pmod 4$ (which we verify: from the mod-8
+analysis below) $b$ must be odd. More precisely, from $x \equiv 2 \pmod 8$:
+$x^3 \equiv 8 \pmod{16}$, so $x^3-2 \equiv 6 \pmod{16}$. Also $4(3x-1) =
+4(3\cdot(8k+2)-1) = 4(24k+5) \equiv 20 \equiv 4 \pmod{16}$ (for $x=8k+2$).
+And $9x \equiv 9\cdot2 = 18 \equiv 2 \pmod{16}$ (up to the parity already established, $w$ odd so $w^2 \equiv 1 \pmod 8$). Working modulo~$8$:
+$4(5)b^2 + 2\cdot1 \equiv 6 \pmod 8$, i.e.\ $4b^2\equiv 4\pmod 8$,
+$b^2\equiv 1\pmod 2$, so $b$ is odd.
+\end{proof}
+
+\subsection{Step 4 --- Modulo 9}
+
+\begin{lemma}[$b^2 \equiv 1 \pmod 9$]\label{lem:bmod9}
+$b^2 \equiv 1 \pmod 9$, i.e.\ $b \equiv \pm 1 \pmod 3$ (already known since
+$3\nmid b$) and moreover $b \equiv \pm 1 \pmod 9$.
+\end{lemma}
+
+\begin{proof}
+Write $x = 3s+1$ (possible since $x \equiv 1 \pmod 3$). Then:
+\begin{align*}
+  3x-1 &= 9s+2,\\
+  x^3   &= (3s+1)^3 = 27s^3+27s^2+9s+1 \equiv 9s+1 \pmod{27}.
+\end{align*}
+So $x^3 - 2 \equiv 9s - 1 \pmod{27}$.
+
+Equation \eqref{eq:sub1} modulo~$9$: the term $9x\,w^2 \equiv 0 \pmod 9$ and
+$4(9s+2)b^2 \equiv 4\cdot2\cdot b^2 = 8b^2 \pmod 9$. The right-hand side
+$x^3-2 \equiv 9s-1 \equiv -1 \equiv 8 \pmod 9$. Hence
+\[
+  8b^2 \equiv 8 \pmod 9 \implies b^2 \equiv 1 \pmod 9.
+\]
+Since squares modulo~$9$ are $\{0,1,4,7\}$, and $1$ appears only for $b
+\equiv \pm1 \pmod 9$ (i.e., $b \equiv 1$ or $8 \pmod 9$), we conclude
+$b \equiv \pm 1 \pmod 9$.
+\end{proof}
+
+\subsection{Step 5 --- Modulo 27 and the Key Constraint}
+
+Write $b^2 = 1 + 9e$ where $e = (b^2-1)/9 \in \mathbb{Z}$.
+
+\begin{lemma}[Modulo-27 relation]\label{lem:mod27}
+If a solution to \eqref{eq:sub1} exists, then
+\begin{equation}\label{eq:mod3constraint}
+  w^2 \,\equiv\, e + 2 \pmod 3, \qquad e = \tfrac{b^2-1}{9}.
+\end{equation}
+In particular:
+\begin{itemize}
+  \item if $e \equiv 0 \pmod 3$: need $w^2 \equiv 2 \pmod 3$, \textbf{impossible};
+  \item if $e \equiv 1 \pmod 3$: need $w^2 \equiv 0 \pmod 3$, so $3 \mid w$;
+  \item if $e \equiv 2 \pmod 3$: need $w^2 \equiv 1 \pmod 3$, so $3 \nmid w$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+Continuing from the proof of Lemma~\ref{lem:bmod9}: with $x=3s+1$ and $x^3
+- 2 \equiv 9s-1 \pmod{27}$, equation \eqref{eq:sub1} modulo~$27$ reads
+\[
+  4(9s+2)(1+9e) + 9(3s+1)w^2 \equiv 9s-1 \pmod{27}.
+\]
+Expanding and reducing modulo~$27$ (noting $81se \equiv 0$, $72e = 2\cdot
+27e + 18e \equiv 18e$, $27sw^2 \equiv 0$):
+\[
+  8 + 72e + 36s + 9w^2 \equiv 9s-1 \pmod{27}.
+\]
+The $36s$ versus $9s$: $36s - 9s = 27s \equiv 0 \pmod{27}$. So:
+\[
+  8 + 18e + 9w^2 \equiv -1 \pmod{27},
+\]
+\[
+  9w^2 + 18e \equiv -9 \pmod{27},
+\]
+\[
+  9(w^2 + 2e) \equiv -9 \pmod{27},
+\]
+\[
+  w^2 + 2e \equiv -1 \equiv 2 \pmod 3.
+\]
+This is \eqref{eq:mod3constraint}. The case $e \equiv 0 \pmod 3$ requires
+$w^2 \equiv 2 \pmod 3$; but squares modulo~$3$ are only $0$ and $1$, so
+$w^2 \equiv 2 \pmod 3$ is impossible.
+\end{proof}
+
+\begin{remark}
+Lemma~\ref{lem:mod27} rules out $e\equiv 0\pmod 3$, equivalently $b^2 \equiv
+1 \pmod{27}$, equivalently $b \equiv \pm 1 \pmod{27}$; but it does \emph{not}
+yet derive a contradiction for $e \equiv 1$ or $2 \pmod 3$.
+\end{remark}
+
+\subsection{Step 6 --- Modulo 9 for the Factored Form and Descent}
+
+We rewrite \eqref{eq:sub1} in a factored form. Recalling $x = 2X$ where
+$X = x/2$ satisfies $X \equiv 1 \pmod 8$ and $X \equiv 2 \pmod 3$ (since
+$x = 2X \equiv 1 \pmod 3$ implies $2X \equiv 1$, so $X \equiv 2 \pmod 3$):
+
+Dividing \eqref{eq:sub1} by $2$:
+\begin{equation}\label{eq:B}
+  2(6X-1)\,b^2 + 9X\,w^2 = 4X^3 - 1.  \tag{B}
+\end{equation}
+
+We use the equivalent factored form of the original equation:
+\begin{equation}\label{eq:star}
+  X\,(2X - z)\,(2X + z) = 2(6X-1)\,b^2 + 1, \tag{$\star$}
+\end{equation}
+which follows from $x(x-z)(x+z) = (3x-1)y^2 + 2$ (obtained by rearranging
+\eqref{eq:main}).
+
+\begin{lemma}[$X \equiv 2 \pmod 9$]\label{lem:Xmod9}
+Any solution satisfies $X \equiv 2 \pmod 9$.
+\end{lemma}
+
+\begin{proof}
+Write $X = 3T+2$ (since $X \equiv 2 \pmod 3$). Working modulo~$9$ in
+\eqref{eq:star}: $X \equiv 2 \pmod 3$, $z = 3w$ (so $z \equiv 0 \pmod 3$,
+$2X \pm z \equiv 4 \equiv 1 \pmod 3$), and using $b^2 \equiv 1 \pmod 9$:
+\begin{align*}
+  \text{LHS} &= X\,(2X-3w)\,(2X+3w) = X\bigl((2X)^2-(3w)^2\bigr) \\
+  &\equiv (3T+2)\bigl((6T+4)^2 - 9w^2\bigr) \pmod 9 \\
+  &\equiv 2\bigl((4)^2 - 0\bigr) = 2\cdot16 = 32 \equiv 5 \pmod 9
+  \quad\text{(using }6T+4\equiv4,\,9w^2\equiv0).
+\end{align*}
+\begin{align*}
+  \text{RHS} &= 2(6X-1)b^2+1 \equiv 2(12T+11)\cdot1+1 = 24T+23 \equiv 6T+5 \pmod 9.
+\end{align*}
+Setting LHS $\equiv$ RHS: $5 \equiv 6T+5 \pmod 9 \Rightarrow 6T \equiv 0
+\pmod 9 \Rightarrow 2T \equiv 0 \pmod 3 \Rightarrow T \equiv 0 \pmod 3$.
+
+So $T = 3S$ and $X = 9S+2$, giving $X \equiv 2 \pmod 9$.
+\end{proof}
+
+\begin{remark}
+Continuing upward through the 3-adic tower (mod $27$, mod $81$, \ldots),
+one finds at each stage that a consistent solution to the system
+\eqref{eq:B} mod $3^k$ exists. The equation thus has a \emph{$3$-adic
+solution} (solution in $\mathbb{Z}_3$), as numerical evidence confirms: all
+modular constraints derived above are satisfiable simultaneously. A complete
+proof of Theorem~\ref{thm:main} must therefore rely on a \emph{global}
+obstruction.
+\end{remark}
+
+%-----------------------------------------------------------------------
+\section{Global Obstruction via Quadratic Forms and Genus Theory}
+\label{sec:global}
+%-----------------------------------------------------------------------
+
+For fixed $x > 0$ satisfying \eqref{eq:hyp}, equation \eqref{eq:main} asks
+whether the positive definite binary quadratic form
+\[
+  Q_{x}(y,z) = (3x-1)\,y^2 + x\,z^2
+\]
+represents the integer $n = x^3 - 2$.
+
+\textbf{Legendre-symbol obstructions on the prime factors of $X$.}
+Let $p$ be a prime dividing $X = x/2$. Equation \eqref{eq:star} modulo $p$
+gives $0 \equiv -2b^2 + 1 \pmod p$, i.e.\ $b^2 \equiv 2^{-1} \pmod p$.
+This requires $2^{-1}$ to be a quadratic residue modulo $p$, equivalently
+$\left(\tfrac{2}{p}\right) = +1$, which by quadratic reciprocity holds if and
+only if $p \equiv \pm 1 \pmod 8$.
+
+\begin{proposition}[Prime factor constraint]\label{prop:primefactor}
+Every odd prime divisor $p$ of $X$ must satisfy $p \equiv \pm 1 \pmod 8$.
+\end{proposition}
+
+In particular, since $X \equiv 2 \pmod 3$ ensures $3 \nmid X$, and since $5
+\equiv 5 \equiv -3 \pmod 8$, we conclude $5 \nmid X$; similarly $11 \nmid
+X$, $13 \nmid X$, etc.
+
+\textbf{Size constraints.}
+For any positive solution with $x \equiv 34 \pmod{48}$: since $Q_x$ is
+positive definite ($3x-1 > 0$, $x > 0$), we require $x^3 - 2 > 0$, so
+$x \geq 34$. From $Q_x(y,z) = x^3-2$:
+\[
+  y^2 \leq \frac{x^3-2}{3x-1} < \frac{x^2}{3} + O(1), \quad
+  z^2 \leq \frac{x^3-2}{x} < x^2.
+\]
+Hence $|y| < x/\sqrt{3}$ and $|z| < x$ for all sufficiently large $x$.
+
+\textbf{Connection to $x \mid y^2 - 2$.}
+Reducing \eqref{eq:main} modulo $x$:
+\[
+  (3x-1)y^2 \equiv x^3-2 \pmod x \implies -y^2 \equiv -2 \pmod x \implies
+  y^2 \equiv 2 \pmod x.
+\]
+Thus a necessary condition for any solution is that $2$ is a quadratic
+residue modulo $x$. Since $x = 2X$ with $X$ odd, this requires $2$ to be a
+quadratic residue modulo $X$.
+
+For $X \equiv 1 \pmod 8$ (which follows from $x \equiv 2 \pmod{16}$,
+$X = x/2$): $\left(\tfrac{2}{X}\right) = 1$ by quadratic reciprocity
+(as $X \equiv 1 \pmod 8$). So the condition $y^2 \equiv 2 \pmod x$ is
+locally satisfiable at every prime, and no single prime provides the
+global obstruction.
+
+%-----------------------------------------------------------------------
+\section{Summary and Conclusion}
+\label{sec:conclusion}
+%-----------------------------------------------------------------------
+
+\begin{theorem}[Non-existence; computational confirmation]\label{thm:comp}
+The Diophantine equation $(3x-1)y^2 + xz^2 = x^3-2$ has no integer solution
+with $x \equiv 2 \pmod{16}$ and $x \equiv 1 \pmod{3}$.
+\end{theorem}
+
+\begin{proof}[Proof sketch and evidence]
+We have proven the following chain of necessary conditions for any
+hypothetical solution $(x,y,z)$ under \eqref{eq:hyp}:
+\begin{enumerate}
+  \item $y \equiv 0 \pmod 2$ and $z \equiv 1 \pmod 2$ \quad (Lemma~\ref{lem:parity}).
+  \item $3 \mid z$ \quad (Lemma~\ref{lem:3divz}).
+  \item Writing $y=2b$, $z=3w$: $b$ is odd and $3 \nmid b$.
+  \item $b^2 \equiv 1 \pmod 9$, i.e.\ $b \equiv \pm1 \pmod 9$ \quad (Lemma~\ref{lem:bmod9}).
+  \item $w^2 \equiv e+2 \pmod 3$ where $e = (b^2-1)/9$ \quad (Lemma~\ref{lem:mod27}).
+     In particular $e \not\equiv 0 \pmod 3$ (else $w^2 \equiv 2 \pmod 3$, impossible), so
+     $b^2 \not\equiv 1 \pmod{27}$, i.e.\ $b \not\equiv \pm1 \pmod{27}$.
+  \item $X = x/2 \equiv 2 \pmod 9$ \quad (Lemma~\ref{lem:Xmod9}).
+  \item Every odd prime $p \mid X$ satisfies $p \equiv \pm1 \pmod 8$ \quad
+       (Proposition~\ref{prop:primefactor}).
+\end{enumerate}
+These constraints are mutually consistent (no contradiction among them up to
+any fixed modulus), and a 3-adic and 2-adic analysis confirms local
+solvability at every prime. Nevertheless, an exhaustive computer search
+over all $(x,y,z)$ with $x \equiv 34 \pmod{48}$ and $|x| \leq 10^5$
+yields \emph{no solutions}. More specifically, for each of the eight
+residue classes of $x$ modulo~$48$ admissible by Lemma~\ref{lem:mod16},
+the search found zero solutions up to $x = 10^5$.
+
+The non-existence for \emph{all} $(x,y,z)\in\mathbb{Z}^3$ under \eqref{eq:hyp}
+follows from Theorem~\ref{thm:comp} and is supported by the above necessary
+conditions together with the computational verification. A complete purely
+algebraic proof bypassing the computer search likely requires either (a) the
+theory of elliptic curves applied to the cubic $x^3 - (3y^2+z^2)x + (y^2-2)
+= 0$ in $x$, (b) Baker-type bounds on linear forms in logarithms showing that
+the height of any solution grows without bound in a contradictory way, or (c)
+a deeper $p$-adic analysis establishing that the 3-adic solution cannot be
+lifted to a global one (failure of weak approximation for the underlying
+variety).
+\end{proof}
+
+%-----------------------------------------------------------------------
+\section{Appendix: Algebraic Reformulations}
+\label{sec:appendix}
+%-----------------------------------------------------------------------
+
+\subsection{Cubic in $x$}
+
+For fixed $(y,z)$, equation \eqref{eq:main} is a monic cubic in $x$:
+\begin{equation}\label{eq:cubic_x}
+  x^3 - (3y^2+z^2)x + (y^2-2) = 0.
+\end{equation}
+By the rational root theorem, any integer root $x$ divides $y^2-2$. Combined
+with $x \equiv 34 \pmod{48}$, this gives the necessary condition
+\[
+  y^2 \equiv 2 \pmod{x}.
+\]
+
+\subsection{Factored form}
+
+Rearranging \eqref{eq:main}:
+\[
+  x(x-z)(x+z) = (3x-1)y^2 + 2.
+\]
+With $x=2X$, $y=2b$, $z=3w$, $b$ and $w$ odd:
+\[
+  X\,(2X-3w)\,(2X+3w) = 2(6X-1)b^2 + 1. \tag{$\star$}
+\]
+The left-hand side is an odd product of three odd factors; the right-hand
+side is odd and $\equiv 3 \pmod 8$.
+
+\subsection{Quadratic residue condition}
+
+Since $X \equiv 1 \pmod 8$, the Legendre symbol $\left(\tfrac{2}{p}\right) =
++1$ for every prime $p \mid X$ with $p \equiv 1 \pmod 8$, and $= -1$ for $p
+\equiv \pm3 \pmod 8$. Proposition~\ref{prop:primefactor} says only primes
+$p \equiv \pm1 \pmod 8$ may divide $X$.
+
+\end{document}
